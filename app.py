@@ -1,7 +1,7 @@
 import pandas as pd
 import requests
-
 import webscrap
+
 from webscrap import fn_get_notas_taquigafricas, fn_busca_tabela
 from bs4 import BeautifulSoup
 from flask import Flask, request, jsonify, render_template

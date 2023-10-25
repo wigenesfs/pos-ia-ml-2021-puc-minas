@@ -1,78 +1,71 @@
 import requests
 import pandas as pd
-from bs4 import BeautifulSoup
-from datetime import timedelta
-from datetime import datetime
-#from google.colab import files
-#import matplotlib.pyplot as plt
 import numpy as np
 import nltk
 
+from bs4 import BeautifulSoup
+from datetime import timedelta
+from datetime import datetime
 
-## Criação de array pra cada coluna que será extraida do HTML da página da Câmara dos Deputados
-#CONTEUDO_SITE = [] ## COLUNA 8
-#LISTA = []
 
-
-## Função para retornar o próximo dia com base na data informada
 def fn_get_proxima_data(data):
-  ProximoDia = pd.to_datetime(data) + pd.DateOffset(days=1)
-  return ProximoDia
+    proximo_dia = pd.to_datetime(data) + pd.DateOffset(days=1)
+    return proximo_dia
 
 
-## Função para obter o conteúdo da página da Câmara dos Deputados com base nos argumentos informados
-def fn_get_notas_taquigafricas(Orador, DataInicial, DataFinal, link):
+def fn_get_notas_taquigafricas(orador, data_inicial, data_final, link):
     discursos = []
-    Orador = Orador.replace(" ", "+")
-    LinkBase = link
-    DataInicial = pd.to_datetime(DataInicial)
-    DataFinal = pd.to_datetime(DataFinal)
-    DataAtual = pd.to_datetime(DataInicial)
+    orador = orador.replace(" ", "+")
+    link_base = link
+    data_inicial = pd.to_datetime(data_inicial)
+    data_final = pd.to_datetime(data_final)
+    data_atual = pd.to_datetime(data_inicial)
 
-    while DataAtual <= DataFinal:
-        InicioDia = DataAtual.day
-        InicioMes = DataAtual.month
-        InicioAno = DataAtual.year
+    while data_atual <= data_final:
+        inicio_dia = data_atual.day
+        inicio_mes = data_atual.month
+        inicio_ano = data_atual.year
 
-        FimDia = DataAtual.day
-        FimMes = DataAtual.month
-        FimAno = DataAtual.year
+        fim_dia = data_atual.day
+        fim_mes = data_atual.month
+        fim_ano = data_atual.year
 
-        uri = f"https://www.camara.leg.br/internet/sitaqweb/resultadoPesquisaDiscursos.asp?txOrador={Orador}&txPartido=&txUF=&dtInicio={InicioDia}%2F{InicioMes}%2F{InicioAno}&dtFim={FimDia}%2F{FimMes}%2F{FimAno}&txTexto=&txSumario=&basePesq=plenario&CampoOrdenacao=dtSessao&PageSize=50&TipoOrdenacao=DESC&btnPesq=Pesquisar"
+        uri = f"https://www.camara.leg.br/internet/sitaqweb/resultadoPesquisaDiscursos.asp?txOrador={orador}&txPartido=&txUF=&dtInicio={inicio_dia}%2F{inicio_mes}%2F{inicio_ano}&dtFim={fim_dia}%2F{fim_mes}%2F{fim_ano}&txTexto=&txSumario=&basePesq=plenario&CampoOrdenacao=dtSessao&PageSize=50&TipoOrdenacao=ASC&btnPesq=Pesquisar"
 
         r = requests.get(uri)
-        conteudo = r.text
+        conteudo = r.content
 
         soup = BeautifulSoup(conteudo, 'html.parser')
-        Dados = soup.find('table', class_='variasColunas')
+        dados = soup.find('table', class_='variasColunas')
 
-        if Dados is not None:
-            fn_busca_tabela(Dados, LinkBase, discursos)
+        if dados is not None:
+            fn_busca_tabela(dados, link_base, discursos)
 
-        DataAtual = fn_get_proxima_data(DataAtual)
+        data_atual = fn_get_proxima_data(data_atual)
 
     return discursos
 
 
 ## Função para iterar no HTML e obter apenas o texto do discurso
-def fn_busca_tabela(Tabela, LinkBase, discursos):
-    for Linha in Tabela.findAll('tr'):  # para tudo que estiver em <tr>
-        Celula = Linha.findAll('td')  # variável para encontrar <td>
+def fn_busca_tabela(tabela, link_base, discursos):
+    for linha in tabela.findAll('tr'):  # para tudo que estiver em <tr>
+        celula = linha.findAll('td')  # variável para encontrar <td>
 
-        if len(Celula) == 8:  # número de colunas
+        if len(celula) == 8:  # número de colunas
 
             # iterando sobre cada linha
-            Texto = fn_retorna_conteudo(
-                LinkBase + (((Celula[3].find('a', href=True)['href']).replace('\r', '')).replace('\n', '')).replace(
+            texto = fn_retorna_conteudo(
+                link_base + (((celula[3].find('a', href=True)['href']).replace('\r', '')).replace('\n', '')).replace(
                     '\t', ''))
-            discursos.append(Texto)
+            discursos.append(texto)
+
 
 def fn_retorna_conteudo(uri):
-  Retorna_resultado = requests.get(uri)
-  Retorna_conteudo = Retorna_resultado.text
-  Dados = BeautifulSoup(Retorna_conteudo, 'html.parser')
-  Dados = Dados.find('p').getText()
-  return(Dados)
+    retorna_resultado = requests.get(uri)
+    retorna_conteudo = retorna_resultado.content
+    dados = BeautifulSoup(retorna_conteudo, 'html.parser')
+    dados = dados.find('p').getText()
+    return(dados)
 
 
 
