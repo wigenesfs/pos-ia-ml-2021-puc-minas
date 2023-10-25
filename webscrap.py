@@ -39,8 +39,8 @@ def fn_get_notas_taquigafricas(Orador, DataInicial, DataFinal, link):
 
         uri = f"https://www.camara.leg.br/internet/sitaqweb/resultadoPesquisaDiscursos.asp?txOrador={Orador}&txPartido=&txUF=&dtInicio={InicioDia}%2F{InicioMes}%2F{InicioAno}&dtFim={FimDia}%2F{FimMes}%2F{FimAno}&txTexto=&txSumario=&basePesq=plenario&CampoOrdenacao=dtSessao&PageSize=50&TipoOrdenacao=DESC&btnPesq=Pesquisar"
 
-        resultado = requests.get(uri)
-        conteudo = resultado.text
+        r = requests.get(uri)
+        conteudo = r.text
 
         soup = BeautifulSoup(conteudo, 'html.parser')
         Dados = soup.find('table', class_='variasColunas')
@@ -77,15 +77,17 @@ def fn_retorna_conteudo(uri):
   return(Dados)
 
 
-## Aqui são informados os valores dos argumentos para a função de obter o conteúdo
-Orador = "EDUARDO BOLSONARO"
-DataInicial = '2022-05-12'
-DataFinal = '2022-05-12'
-Link = "https://www.camara.leg.br/internet/sitaqweb/"
 
-fn_get_notas_taquigafricas(Orador, DataInicial, DataFinal, Link )
+
+### Aqui são informados os valores dos argumentos para a função de obter o conteúdo
+#Orador = "EDUARDO BOLSONARO"
+#DataInicial = '2022-05-12'
+#DataFinal = '2022-05-12'
+#Link = "https://www.camara.leg.br/internet/sitaqweb/"
+
+#fn_get_notas_taquigafricas(Orador, DataInicial, DataFinal, Link )
 
 ## Passo os dados da Lista para o DataSet
-df_discurso = pd.DataFrame()
-df_discurso['discurso'] = CONTEUDO_SITE
-df_discurso.to_csv('discurso.csv',index=False)
+#df_discurso = pd.DataFrame()
+#df_discurso['discurso'] = CONTEUDO_SITE
+#df_discurso.to_csv('discurso.csv',index=False)

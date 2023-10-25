@@ -1,0 +1,51 @@
+{% extends "template.html" %}
+{% block conteudo %}
+
+<form method="POST" action="/web/api">
+    <fieldset>
+        <div class="form-group">
+            <label for="Orador">Orador</label>
+            <input type="text" id="Orador" name="nome_orador" class="form-control" value="{{ nome_orador }}">
+        </div>
+        <div class="form-group">
+            <label for="data-inicio">Data Início</label>
+            <input type="date" id="data-inicio" name="data_inicio" class="form-control-date" value="{{ data_inicio }}">
+        </div>
+        <div class="form-group">
+            <label for="data-fim">Data Fim</label>
+            <input type="date" id="data-fim" name="data_fim" class="form-control-date" value="{{ data_fim }}">
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary btn-salvar">Analisar</button>
+    </fieldset>
+</form>
+<br>
+<br>
+
+{% if results %}
+
+<h2>Análise</h2>
+<br>
+<table class="table table-striped table-responsive table-bordered">
+    <thead class="thead-default">
+    <tr>
+        <!--<th>C&oacute;digo &Aacute;rea</th>
+        <th>Descric&atilde;o &Aacute;rea</th>
+        <th>Nome &Aacute;rea</th>-->
+        <th>Discurso</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for texto in results %}
+        <tr>
+            <td>{{ texto.texto_discurso }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+
+</table>
+
+{% endif %}
+
+
+{% endblock %}
