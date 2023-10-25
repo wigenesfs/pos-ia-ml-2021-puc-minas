@@ -10,8 +10,8 @@ import nltk
 
 
 ## Criação de array pra cada coluna que será extraida do HTML da página da Câmara dos Deputados
-CONTEUDO_SITE = [] ## COLUNA 8
-LISTA = []
+#CONTEUDO_SITE = [] ## COLUNA 8
+#LISTA = []
 
 
 ## Função para retornar o próximo dia com base na data informada
@@ -22,6 +22,7 @@ def fn_get_proxima_data(data):
 
 ## Função para obter o conteúdo da página da Câmara dos Deputados com base nos argumentos informados
 def fn_get_notas_taquigafricas(Orador, DataInicial, DataFinal, link):
+    discursos = []
     Orador = Orador.replace(" ", "+")
     LinkBase = link
     DataInicial = pd.to_datetime(DataInicial)
@@ -46,17 +47,15 @@ def fn_get_notas_taquigafricas(Orador, DataInicial, DataFinal, link):
         Dados = soup.find('table', class_='variasColunas')
 
         if Dados is not None:
-            print(DataAtual, "- Com Discurso")
-            Resultado = fn_busca_tabela(Dados, LinkBase)
-
-        else:
-            print(DataAtual, "- Sem Discurso")
+            fn_busca_tabela(Dados, LinkBase, discursos)
 
         DataAtual = fn_get_proxima_data(DataAtual)
 
+    return discursos
+
 
 ## Função para iterar no HTML e obter apenas o texto do discurso
-def fn_busca_tabela(Tabela, LinkBase):
+def fn_busca_tabela(Tabela, LinkBase, discursos):
     for Linha in Tabela.findAll('tr'):  # para tudo que estiver em <tr>
         Celula = Linha.findAll('td')  # variável para encontrar <td>
 
@@ -66,8 +65,7 @@ def fn_busca_tabela(Tabela, LinkBase):
             Texto = fn_retorna_conteudo(
                 LinkBase + (((Celula[3].find('a', href=True)['href']).replace('\r', '')).replace('\n', '')).replace(
                     '\t', ''))
-            CONTEUDO_SITE.append(Texto)
-            LISTA.append(Texto)
+            discursos.append(Texto)
 
 def fn_retorna_conteudo(uri):
   Retorna_resultado = requests.get(uri)
