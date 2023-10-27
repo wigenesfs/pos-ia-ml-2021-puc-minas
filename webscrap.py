@@ -46,14 +46,11 @@ def fn_get_notas_taquigafricas(orador, data_inicial, data_final, link):
     return discursos
 
 
-## Função para iterar no HTML e obter apenas o texto do discurso
 def fn_busca_tabela(tabela, link_base, discursos):
-    for linha in tabela.findAll('tr'):  # para tudo que estiver em <tr>
-        celula = linha.findAll('td')  # variável para encontrar <td>
+    for linha in tabela.findAll('tr'):
+        celula = linha.findAll('td')
 
-        if len(celula) == 8:  # número de colunas
-
-            # iterando sobre cada linha
+        if len(celula) == 8:
             texto = fn_retorna_conteudo(
                 link_base + (((celula[3].find('a', href=True)['href']).replace('\r', '')).replace('\n', '')).replace(
                     '\t', ''))
@@ -66,19 +63,3 @@ def fn_retorna_conteudo(uri):
     dados = BeautifulSoup(retorna_conteudo, 'html.parser')
     dados = dados.find('p').getText()
     return(dados)
-
-
-
-
-### Aqui são informados os valores dos argumentos para a função de obter o conteúdo
-#Orador = "EDUARDO BOLSONARO"
-#DataInicial = '2022-05-12'
-#DataFinal = '2022-05-12'
-#Link = "https://www.camara.leg.br/internet/sitaqweb/"
-
-#fn_get_notas_taquigafricas(Orador, DataInicial, DataFinal, Link )
-
-## Passo os dados da Lista para o DataSet
-#df_discurso = pd.DataFrame()
-#df_discurso['discurso'] = CONTEUDO_SITE
-#df_discurso.to_csv('discurso.csv',index=False)
