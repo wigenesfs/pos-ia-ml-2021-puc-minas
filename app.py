@@ -26,7 +26,7 @@ def get_discursos(discursos):
 def get_discursos_bert(discursos):
     results_per_discursos = []
     for i in range(len(discursos)):
-        discursos[i][0] = re.sub("[\"\']", "", discursos[i][0])
+        #discursos[i][0] = re.sub("[\"\']", "", discursos[i][0])
         results_per_discursos.append({'texto_discurso': discursos[i][0],
                                       'sentimento': discursos[i][1],
                                       'probabilidade': discursos[i][2]})
@@ -38,7 +38,7 @@ def fn_get_sentimento(discursos):
     lista = []
     for i in discursos:
         sent = ANALYZER.predict(i)
-        discurso = [i, sent.output, round(max(sent.probas.values()),4)]
+        discurso = [i, sent.output, round(max(sent.probas.values())*100,2)]
         lista.append(discurso)
 
     return lista
@@ -51,12 +51,12 @@ def fn_health_check():
 
 @app.route('/', methods=['GET'])
 def index():
-    return render_template('result.html', titulo='Análise de Sentimento de Discursos Parlamentares')
+    return render_template('result.html', titulo='Análise de Sentimento de Discursos dos Deputados Federais')
 
 
 @app.route('/bert', methods=['GET'])
 def home():
-    return render_template('result_bert.html', titulo='Análise de Sentimento de Discursos Parlamentares')
+    return render_template('result_bert.html', titulo='Análise de Sentimento dde Discursos dos Deputados Federais')
 
 
 @app.route('/web/api', methods=['POST'])
