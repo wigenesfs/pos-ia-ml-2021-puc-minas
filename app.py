@@ -34,11 +34,14 @@ def get_discursos_bert(discursos):
     return results_per_discursos
 
 
-def fn_get_sentimento(discurso):
-    for i in discurso:
+def fn_get_sentimento(discursos):
+    lista = []
+    for i in discursos:
         sent = ANALYZER.predict(i)
-        lista = [[i, sent.output, round(max(sent.probas.values()),4)]]
-        return lista
+        discurso = [i, sent.output, round(max(sent.probas.values()),4)]
+        lista.append(discurso)
+
+    return lista
 
 
 @app.route("/check")
