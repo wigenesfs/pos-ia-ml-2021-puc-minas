@@ -56,7 +56,7 @@ def index():
 
 @app.route('/bert', methods=['GET'])
 def home():
-    return render_template('result_bert.html', titulo='Análise de Sentimento dde Discursos dos Deputados Federais')
+    return render_template('result_bert.html', titulo='Análise de Sentimento de Discursos dos Deputados Federais')
 
 
 @app.route('/web/api', methods=['POST'])
@@ -68,7 +68,7 @@ def fn_get_valores():
     results = get_discursos(discursos)
     return render_template('result.html',
                            results=results,
-                           titulo='Análise de Sentimento de Discursos Parlamentares',
+                           titulo='Análise de Sentimento de Discursos dos Deputados Federais',
                            nome_orador=nome_orador,
                            data_inicio=data_inicio,
                            data_fim=data_fim)
@@ -84,7 +84,7 @@ def fn_get_sentimentos_bert():
     results = get_discursos_bert(sentimentos)
     return render_template('result_bert.html',
                            results=results,
-                           titulo='Análise de Sentimento de Discursos Parlamentares',
+                           titulo='Análise de Sentimento de Discursos dos Deputados Federais',
                            nome_orador=nome_orador,
                            data_inicio=data_inicio,
                            data_fim=data_fim)
