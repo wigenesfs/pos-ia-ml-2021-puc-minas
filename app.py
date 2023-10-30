@@ -65,6 +65,7 @@ def fn_get_valores():
     data_inicio = request.form['data_inicio']
     data_fim = request.form['data_fim']
     discursos = fn_get_notas_taquigafricas(nome_orador, data_inicio, data_fim, LINK)
+    print(discursos)
     results = get_discursos(discursos)
     return render_template('result.html',
                            results=results,
