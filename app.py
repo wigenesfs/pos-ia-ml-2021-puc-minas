@@ -20,6 +20,15 @@ with open(MODEL_FILENAME, 'rb') as file:
 with open(TFIDF_VECTORIZER, 'rb') as file:
     tfidf = pickle.load(file)
 
+LABEL_SENTIMENT_SVM = {
+    'pos': 'Positivo',
+    'neg': 'Negativo'}
+
+LABEL_SENTIMENT_BERT = {
+    'POS': 'Positivo',
+    'NEG': 'Negativo',
+    'NEU': 'Neutro'}
+
 
 def fn_get_discursos_svm(discursos):
     results_per_discursos = []
@@ -46,7 +55,7 @@ def fn_get_sentimento_svm(discursos):
     for i in discursos:
         sent = svc_model.predict(tfidf.transform([i]))
         proba = svc_model.predict_proba(tfidf.transform([i]))
-        discurso = [i, sent.item(), round(proba.max()*100,2)]
+        discurso = [i, LABEL_SENTIMENT_SVM[sent.item()], round(proba.max()*100,2)]
         lista.append(discurso)
 
     return lista
@@ -56,7 +65,7 @@ def fn_get_sentimento_bert(discursos):
     lista = []
     for i in discursos:
         sent = ANALYZER.predict(i)
-        discurso = [i, sent.output, round(max(sent.probas.values())*100,2)]
+        discurso = [i, LABEL_SENTIMENT_BERT[sent.output], round(max(sent.probas.values())*100,2)]
         lista.append(discurso)
 
     return lista
@@ -85,6 +94,8 @@ def fn_svm():
     discursos = fn_get_notas_taquigafricas(nome_orador, data_inicio, data_fim, LINK)
     sentimentos = fn_get_sentimento_svm(discursos)
     results = fn_get_discursos_svm(sentimentos)
+    df = pd.DataFrame(results, columns=['texto_discurso', 'sentimento', 'probabilidade'])
+    print(df)
     return render_template('result_svm.html',
                            results=results,
                            titulo='Análise de Sentimento de Discursos dos Deputados Federais',
