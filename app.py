@@ -4,6 +4,7 @@ import webscrap
 import bertweet
 import re
 import pysentimiento
+import pickle
 from pysentimiento import analyzer,create_analyzer
 from webscrap import fn_get_notas_taquigafricas, fn_busca_tabela
 from bs4 import BeautifulSoup
@@ -13,6 +14,11 @@ app = Flask(__name__)
 
 LINK = "https://www.camara.leg.br/internet/sitaqweb/"
 ANALYZER = create_analyzer(task="sentiment", lang="pt")
+
+# Carregar o modelo previamente treinado
+MODEL_FILENAME = 'models/svc_model.pkl'
+with open('svc_model.pkl', 'rb') as file:
+    svc_model = pickle.load(file)
 
 def get_discursos(discursos):
     results_per_discursos = []
@@ -59,13 +65,34 @@ def home():
     return render_template('result_bert.html', titulo='Análise de Sentimento de Discursos dos Deputados Federais')
 
 
+@app.route('/predict', methods=['GET'])
+def home():
+    return render_template('result_svc.html', titulo='Análise de Sentimento de Discursos dos Deputados Federais')
+
+
+@app.route('/sentimento/api', methods=['POST'])
+def fn_get_valores():
+    nome_orador = request.form['nome_orador']
+    data_inicio = request.form['data_inicio']
+    data_fim = request.form['data_fim']
+    discursos = fn_get_notas_taquigafricas(nome_orador, data_inicio, data_fim, LINK)
+    results = svc_model.predict(discursos)
+    print(results)
+    #results = get_discursos(discursos)
+    return render_template('result_svc.html',
+                           results=results,
+                           titulo='Análise de Sentimento de Discursos dos Deputados Federais',
+                           nome_orador=nome_orador,
+                           data_inicio=data_inicio,
+                           data_fim=data_fim)
+
+
 @app.route('/web/api', methods=['POST'])
 def fn_get_valores():
     nome_orador = request.form['nome_orador']
     data_inicio = request.form['data_inicio']
     data_fim = request.form['data_fim']
     discursos = fn_get_notas_taquigafricas(nome_orador, data_inicio, data_fim, LINK)
-    print(discursos)
     results = get_discursos(discursos)
     return render_template('result.html',
                            results=results,
