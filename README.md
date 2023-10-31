@@ -7,10 +7,9 @@ Este projeto aplica um modelo de Análise de Sentimento nos discursos proferidos
 
 ## Paths disponíveis
 
-| Path                | HTTP Method | Required parameters (type)                                                    | Optional parameters (type, default)                                                                                                                               |
-|---------------------| ----------- |-------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `/`            | GET         | N/A                                                                           | N/A                                                                                                                                                               |
-| `/check`            | GET         | - `nome_orador` (string) <br> - `data_inicio` (date) <br> - `data_fim` (date) | N/A |
-| `/bert`             | GET         | - `nome_orador` (string) <br> - `data_inicio` (date) <br> - `data_fim` (date) | N/A|
-
+| Path     | HTTP Method | Description                                                                              | Required parameters (type)                                                                                                                               |
+|----------| ----------- |------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `/check` | GET         | Endpoint para verificação da API online.                                                 | N/A                                                                                                                                                               |
+| `/svm`   | GET         | Endpoint para classificação dos discursos utilizando modelo de classificação SVM.        |  - `nome_orador` (string) <br> - `data_inicio` (date) <br> - `data_fim` (date) |
+| `/bert`  | GET         | Endpoint para classificação dos discursos utilizando modelo pré-treinado `pysentimiento`. | - `nome_orador` (string) <br> - `data_inicio` (date) <br> - `data_fim` (date)|
 ---

@@ -1,14 +1,11 @@
 import pandas as pd
 import requests
 import webscrap
-import bertweet
-import re
 import pysentimiento
 import pickle
 import sklearn
 from pysentimiento import analyzer,create_analyzer
 from webscrap import fn_get_notas_taquigafricas, fn_busca_tabela
-from bs4 import BeautifulSoup
 from flask import Flask, request, jsonify, render_template
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -24,19 +21,9 @@ with open(TFIDF_VECTORIZER, 'rb') as file:
     tfidf = pickle.load(file)
 
 
-def get_discursos(discursos):
+def fn_get_discursos_svm(discursos):
     results_per_discursos = []
     for i in range(len(discursos)):
-        discursos[i] = re.sub("[\"\']", "", discursos[i])
-        results_per_discursos.append({'texto_discurso': discursos[i]})
-
-    return results_per_discursos
-
-
-def get_discursos_bert(discursos):
-    results_per_discursos = []
-    for i in range(len(discursos)):
-        #discursos[i][0] = re.sub("[\"\']", "", discursos[i][0])
         results_per_discursos.append({'texto_discurso': discursos[i][0],
                                       'sentimento': discursos[i][1],
                                       'probabilidade': discursos[i][2]})
@@ -44,10 +31,9 @@ def get_discursos_bert(discursos):
     return results_per_discursos
 
 
-def get_discursos_svc(discursos):
+def fn_get_discursos_bert(discursos):
     results_per_discursos = []
     for i in range(len(discursos)):
-        #discursos[i][0] = re.sub("[\"\']", "", discursos[i][0])
         results_per_discursos.append({'texto_discurso': discursos[i][0],
                                       'sentimento': discursos[i][1],
                                       'probabilidade': discursos[i][2]})
@@ -55,18 +41,7 @@ def get_discursos_svc(discursos):
     return results_per_discursos
 
 
-
-def fn_get_sentimento(discursos):
-    lista = []
-    for i in discursos:
-        sent = ANALYZER.predict(i)
-        discurso = [i, sent.output, round(max(sent.probas.values())*100,2)]
-        lista.append(discurso)
-
-    return lista
-
-
-def fn_get_sentimento_svc(discursos):
+def fn_get_sentimento_svm(discursos):
     lista = []
     for i in discursos:
         sent = svc_model.predict(tfidf.transform([i]))
@@ -77,14 +52,24 @@ def fn_get_sentimento_svc(discursos):
     return lista
 
 
+def fn_get_sentimento_bert(discursos):
+    lista = []
+    for i in discursos:
+        sent = ANALYZER.predict(i)
+        discurso = [i, sent.output, round(max(sent.probas.values())*100,2)]
+        lista.append(discurso)
+
+    return lista
+
+
 @app.route("/check")
 def fn_health_check():
     return {"health": "ok"}, 200
 
 
-@app.route('/', methods=['GET'])
-def index():
-    return render_template('result.html', titulo='Análise de Sentimento de Discursos dos Deputados Federais')
+@app.route('/svm', methods=['GET'])
+def fn_predict():
+    return render_template('result_svm.html', titulo='Análise de Sentimento de Discursos dos Deputados Federais')
 
 
 @app.route('/bert', methods=['GET'])
@@ -92,35 +77,15 @@ def home():
     return render_template('result_bert.html', titulo='Análise de Sentimento de Discursos dos Deputados Federais')
 
 
-@app.route('/predict', methods=['GET'])
-def fn_predict():
-    return render_template('result_svc.html', titulo='Análise de Sentimento de Discursos dos Deputados Federais')
-
-
-@app.route('/sentimento/api', methods=['POST'])
-def fn_sentimento_api():
+@app.route('/svm/api', methods=['POST'])
+def fn_svm():
     nome_orador = request.form['nome_orador']
     data_inicio = request.form['data_inicio']
     data_fim = request.form['data_fim']
     discursos = fn_get_notas_taquigafricas(nome_orador, data_inicio, data_fim, LINK)
-    sentimentos = fn_get_sentimento_svc(discursos)
-    results = get_discursos_svc(sentimentos)
-    return render_template('result_svc.html',
-                           results=results,
-                           titulo='Análise de Sentimento de Discursos dos Deputados Federais',
-                           nome_orador=nome_orador,
-                           data_inicio=data_inicio,
-                           data_fim=data_fim)
-
-
-@app.route('/web/api', methods=['POST'])
-def fn_get_valores():
-    nome_orador = request.form['nome_orador']
-    data_inicio = request.form['data_inicio']
-    data_fim = request.form['data_fim']
-    discursos = fn_get_notas_taquigafricas(nome_orador, data_inicio, data_fim, LINK)
-    results = get_discursos(discursos)
-    return render_template('result.html',
+    sentimentos = fn_get_sentimento_svm(discursos)
+    results = fn_get_discursos_svm(sentimentos)
+    return render_template('result_svm.html',
                            results=results,
                            titulo='Análise de Sentimento de Discursos dos Deputados Federais',
                            nome_orador=nome_orador,
@@ -129,13 +94,13 @@ def fn_get_valores():
 
 
 @app.route('/bert/api', methods=['POST'])
-def fn_get_sentimentos_bert():
+def fn_bert():
     nome_orador = request.form['nome_orador']
     data_inicio = request.form['data_inicio']
     data_fim = request.form['data_fim']
     discursos = fn_get_notas_taquigafricas(nome_orador, data_inicio, data_fim, LINK)
-    sentimentos = fn_get_sentimento(discursos)
-    results = get_discursos_bert(sentimentos)
+    sentimentos = fn_get_sentimento_bert(discursos)
+    results = fn_get_discursos_bert(sentimentos)
     return render_template('result_bert.html',
                            results=results,
                            titulo='Análise de Sentimento de Discursos dos Deputados Federais',
