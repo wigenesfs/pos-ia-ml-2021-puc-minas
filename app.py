@@ -94,8 +94,6 @@ def fn_svm():
     discursos = fn_get_notas_taquigafricas(nome_orador, data_inicio, data_fim, LINK)
     sentimentos = fn_get_sentimento_svm(discursos)
     results = fn_get_discursos_svm(sentimentos)
-    df = pd.DataFrame(results, columns=['texto_discurso', 'sentimento', 'probabilidade'])
-    print(df)
     return render_template('result_svm.html',
                            results=results,
                            titulo='Análise de Sentimento de Discursos dos Deputados Federais',

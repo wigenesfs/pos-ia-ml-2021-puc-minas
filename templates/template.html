@@ -5,15 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Análise de Sentimento</title>
     <link rel="stylesheet" href="../static/bootstrap.css">
+    <link rel="stylesheet" href="../static/css/fontawesome.css">
+    <link rel="stylesheet" href="../static/css/brands.css">
+    <link rel="stylesheet" href="../static/css/solid.css">
 </head>
 <body>
     <div class="container">
-        <div class="page-header">
-            <h1>{{ titulo }}</h1>
+        <div class="page-header justify-content-center">
+            <h1>{{ titulo }}  <i class="fa-solid fa-robot fa-bounce fa-lg" style="color: #0070c8;"></i></h1>
         </div>
 
         {% block conteudo %} {% endblock %}
 
     </div>
 </body>
+<footer>
+    <div class="card-footer model-footer">
+        <p>&copy; 2023 - Todos os direitos reservados a Wigenes Sampaio</p>
+        <p>Trabalho desenvolvido como requisito para conclusão da Especialização em IA e Aprendizado de Máquina na PUC Minas.</p>
+        <nav>
+            <ul class="nav justify-content-center">
+                <li class="nav-item"><a href="https://www.linkedin.com/in/wigenessampaio/">LinkedIn</a></li>
+		    </ul>
+	    </nav>
+    </div>
+</footer>
 </html>
