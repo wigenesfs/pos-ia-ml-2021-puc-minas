@@ -4,15 +4,15 @@
 <form method="POST" action="/svm/api">
     <fieldset>
         <div class="form-group">
-            <label for="Orador">Orador</label>
-            <input type="text" id="Orador" name="nome_orador" class="form-control" value="{{ nome_orador }}">
+            <label for="Orador"><strong>Orador</strong></label>
+            <input type="text" id="Orador" name="nome_orador" class="form-control" value="{{ nome_orador }}" placeholder="Nome Parlamentar que proferiu o discurso">
         </div>
         <div class="form-group">
-            <label for="data-inicio">Data Início</label>
+            <label for="data-inicio"><strong>Data Início</strong></label>
             <input type="date" id="data-inicio" name="data_inicio" class="form-control-date" value="{{ data_inicio }}">
         </div>
         <div class="form-group">
-            <label for="data-fim">Data Fim</label>
+            <label for="data-fim"><strong>Data Fim</strong></label>
             <input type="date" id="data-fim" name="data_fim" class="form-control-date" value="{{ data_fim }}">
         </div>
         <br>

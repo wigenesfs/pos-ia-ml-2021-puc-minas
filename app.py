@@ -71,7 +71,7 @@ def fn_get_sentimento_bert(discursos):
     return lista
 
 
-@app.route("/check")
+@app.route("/")
 def fn_health_check():
     return {"health": "ok"}, 200
 
