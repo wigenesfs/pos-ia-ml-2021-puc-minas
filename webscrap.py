@@ -15,6 +15,8 @@ def fn_get_proxima_data(data):
 
 def fn_get_notas_taquigafricas(orador, data_inicial, data_final, link):
     discursos = []
+    data_discurso = []
+    #df = pd.DataFrame()
     orador = orador.replace(" ", "+")
     link_base = link
     data_inicial = pd.to_datetime(data_inicial)
@@ -39,18 +41,20 @@ def fn_get_notas_taquigafricas(orador, data_inicial, data_final, link):
         dados = soup.find('table', class_='variasColunas')
 
         if dados is not None:
-            fn_busca_tabela(dados, link_base, discursos)
+            fn_busca_tabela(dados, link_base, discursos, data_discurso)
 
         data_atual = fn_get_proxima_data(data_atual)
 
-    return discursos
+    return pd.DataFrame(list(zip(data_discurso, discursos)), columns=['data_discurso', 'discurso'])
 
 
-def fn_busca_tabela(tabela, link_base, discursos):
+def fn_busca_tabela(tabela, link_base, discursos, data_discurso):
     for linha in tabela.findAll('tr'):
         celula = linha.findAll('td')
 
         if len(celula) == 8:
+            data_discurso.append((((celula[0].find(text=True)).replace('\r', '')).replace('\n', '')).replace('\t', ''))
+
             texto = fn_retorna_conteudo(
                 link_base + (((celula[3].find('a', href=True)['href']).replace('\r', '')).replace('\n', '')).replace(
                     '\t', ''))

@@ -4,6 +4,7 @@ import webscrap
 import pysentimiento
 import pickle
 import sklearn
+
 from pysentimiento import analyzer,create_analyzer
 from webscrap import fn_get_notas_taquigafricas, fn_busca_tabela
 from flask import Flask, request, jsonify, render_template
@@ -30,45 +31,48 @@ LABEL_SENTIMENT_BERT = {
     'NEU': 'Neutro'}
 
 
+def fn_get_sentimento_svm(discursos):
+    lista = []
+
+    for index, row in discursos.iterrows():
+        sent = svc_model.predict(tfidf.transform([row['discurso']]))
+        proba = svc_model.predict_proba(tfidf.transform([row['discurso']]))
+        discurso = [row['data_discurso'], row['discurso'], LABEL_SENTIMENT_SVM[sent.item()], round(proba.max()*100,2)]
+        lista.append(discurso)
+
+    return lista
+
+
 def fn_get_discursos_svm(discursos):
     results_per_discursos = []
     for i in range(len(discursos)):
-        results_per_discursos.append({'texto_discurso': discursos[i][0],
-                                      'sentimento': discursos[i][1],
-                                      'probabilidade': discursos[i][2]})
+        results_per_discursos.append({'data_discurso': discursos[i][0],
+                                      'texto_discurso': discursos[i][1],
+                                      'sentimento': discursos[i][2],
+                                      'probabilidade': discursos[i][3]})
 
     return results_per_discursos
+
+
+def fn_get_sentimento_bert(discursos):
+    lista = []
+    for index, row in discursos.iterrows():
+        sent = ANALYZER.predict(row['discurso'])
+        discurso = [row['data_discurso'], row['discurso'], LABEL_SENTIMENT_BERT[sent.output], round(max(sent.probas.values())*100,2)]
+        lista.append(discurso)
+
+    return lista
 
 
 def fn_get_discursos_bert(discursos):
     results_per_discursos = []
     for i in range(len(discursos)):
-        results_per_discursos.append({'texto_discurso': discursos[i][0],
-                                      'sentimento': discursos[i][1],
-                                      'probabilidade': discursos[i][2]})
+        results_per_discursos.append({'data_discurso': discursos[i][0],
+                                      'texto_discurso': discursos[i][1],
+                                      'sentimento': discursos[i][2],
+                                      'probabilidade': discursos[i][3]})
 
     return results_per_discursos
-
-
-def fn_get_sentimento_svm(discursos):
-    lista = []
-    for i in discursos:
-        sent = svc_model.predict(tfidf.transform([i]))
-        proba = svc_model.predict_proba(tfidf.transform([i]))
-        discurso = [i, LABEL_SENTIMENT_SVM[sent.item()], round(proba.max()*100,2)]
-        lista.append(discurso)
-
-    return lista
-
-
-def fn_get_sentimento_bert(discursos):
-    lista = []
-    for i in discursos:
-        sent = ANALYZER.predict(i)
-        discurso = [i, LABEL_SENTIMENT_BERT[sent.output], round(max(sent.probas.values())*100,2)]
-        lista.append(discurso)
-
-    return lista
 
 
 @app.route("/")
