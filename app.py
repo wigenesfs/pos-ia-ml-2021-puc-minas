@@ -1,12 +1,12 @@
 import pandas as pd
 import requests
-import webscrap
+import webscraper
 import pysentimiento
 import pickle
 import sklearn
 
 from pysentimiento import analyzer,create_analyzer
-from webscrap import fn_get_notas_taquigafricas, fn_busca_tabela
+from webscraper import fn_get_notas_taquigafricas, fn_busca_tabela
 from flask import Flask, request, jsonify, render_template
 from sklearn.feature_extraction.text import TfidfVectorizer
 
