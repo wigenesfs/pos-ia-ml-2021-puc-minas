@@ -3,20 +3,20 @@
 
 <form method="POST" action="/svm/api">
     <fieldset>
-        <div class="form-group">
-            <label for="Orador"><strong>Orador</strong></label>
+        <div class="form-group mb-3">
+            <label for="Orador"><strong>Orador <br></strong></label>
             <input type="text" id="Orador" name="nome_orador" class="form-control" value="{{ nome_orador }}" placeholder="Nome Parlamentar que proferiu o discurso">
         </div>
-        <div class="form-group">
-            <label for="data-inicio"><strong>Data Início</strong></label>
-            <input type="date" id="data-inicio" name="data_inicio" class="form-control-date" value="{{ data_inicio }}">
+        <div class="form-group mb-3">
+            <label for="data-inicio"><strong>Data Início Discurso</strong></label>
+            <input type="date" id="data-inicio" name="data_inicio" class="form-control-date" data-toggle="tooltip" data-placement="right" title="Data Inicial do Discurso proferido." value="{{ data_inicio }}">
         </div>
-        <div class="form-group">
-            <label for="data-fim"><strong>Data Fim</strong></label>
-            <input type="date" id="data-fim" name="data_fim" class="form-control-date" value="{{ data_fim }}">
+        <div class="form-group mb-3">
+            <label for="data-fim"><strong>Data Fim Discurso</strong></label>
+            <input type="date" id="data-fim" name="data_fim" class="form-control-date" data-toggle="tooltip" data-placement="right" title="Data Final do Discurso proferido. Deve ser menor ou igual a data de início do discurso." value="{{ data_fim }}">
         </div>
         <br>
-        <button type="submit" class="btn btn-primary btn-salvar">Analisar</button>
+        <button type="submit" class="btn btn-primary btn-salvar" data-toggle="tooltip" data-placement="right" title="Clique aqui para iniciar a análise de sentimento."> Analisar</button>
     </fieldset>
 </form>
 <br>
