@@ -4,6 +4,7 @@ import webscraper
 import pysentimiento
 import pickle
 import sklearn
+import json
 
 from pysentimiento import analyzer,create_analyzer
 from webscraper import fn_get_notas_taquigafricas, fn_busca_tabela
@@ -95,6 +96,13 @@ def fn_svm():
     nome_orador = request.form['nome_orador']
     data_inicio = request.form['data_inicio']
     data_fim = request.form['data_fim']
+
+    if not nome_orador:
+        return {"Erro": "O nome do orador deve ser informado."}, 400
+
+    if data_fim < data_inicio:
+        return {"Erro": "A Data Fim Discurso deve ser menor ou igual a Data Início Discurso."}, 400
+
     discursos = fn_get_notas_taquigafricas(nome_orador, data_inicio, data_fim, LINK)
     sentimentos = fn_get_sentimento_svm(discursos)
     results = fn_get_discursos_svm(sentimentos)
@@ -111,6 +119,13 @@ def fn_bert():
     nome_orador = request.form['nome_orador']
     data_inicio = request.form['data_inicio']
     data_fim = request.form['data_fim']
+
+    if not nome_orador:
+        return {"Erro": "O nome do orador deve ser informado."}, 400
+
+    if data_fim < data_inicio:
+        return {"Erro": "A Data Fim Discurso deve ser menor ou igual a Data Início Discurso."}, 400
+
     discursos = fn_get_notas_taquigafricas(nome_orador, data_inicio, data_fim, LINK)
     sentimentos = fn_get_sentimento_bert(discursos)
     results = fn_get_discursos_bert(sentimentos)
