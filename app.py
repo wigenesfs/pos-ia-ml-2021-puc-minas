@@ -15,8 +15,8 @@ app = Flask(__name__)
 
 LINK = "https://www.camara.leg.br/internet/sitaqweb/"
 ANALYZER = create_analyzer(task="sentiment", lang="pt")
-TFIDF_VECTORIZER = 'models/tfidf_vectorizer.pkl'
-MODEL_FILENAME = 'models/svc_model.pkl'
+TFIDF_VECTORIZER = 'models/lr_tfidf_vectorizer.pkl'
+MODEL_FILENAME = 'models/lr.pkl'
 with open(MODEL_FILENAME, 'rb') as file:
     svc_model = pickle.load(file)
 with open(TFIDF_VECTORIZER, 'rb') as file:
