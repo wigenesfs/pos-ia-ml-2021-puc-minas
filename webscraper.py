@@ -1,11 +1,57 @@
+import re
 import requests
 import pandas as pd
 import numpy as np
 import nltk
 
+from nltk import ToktokTokenizer, RSLPStemmer
+from nltk.corpus import stopwords
+
 from bs4 import BeautifulSoup
 from datetime import timedelta
 from datetime import datetime
+
+
+# Cria instância do TokTokTokenizer
+tokenizer = ToktokTokenizer()
+
+# Gera lista de stopwords em Português
+nltk.download('stopwords')
+stopword_list = nltk.corpus.stopwords.words('portuguese')
+
+
+# Configura stopwords para Português
+stop = set(stopwords.words('portuguese'))
+
+
+# Função para remover stopwords
+def fn_rm_stopwords(text, is_lower_case=False):
+    tokens = tokenizer.tokenize(text)
+    tokens = [token.strip() for token in tokens]
+    if is_lower_case:
+        filtered_tokens = [token for token in tokens if token not in stopword_list]
+    else:
+        filtered_tokens = [token for token in tokens if token.lower() not in stopword_list]
+    filtered_text = ' '.join(filtered_tokens)
+    return filtered_text
+
+
+# Função para remover caracteres especiais
+def fn_rm_special_char(text, remove_digits=True):
+    pattern = "[@!^&\/\\#,+()$~%.'\":*?<>{}\[\]0-9\_]"
+    text = re.sub(pattern, '', text)
+    return text
+
+
+# Baixa o algoritmo RSLP Stemmer (Removedor de Sufixos da Língua Portuguesa)
+nltk.download('rslp')
+
+
+# Função de stemming
+def fn_stemmer(text):
+    stemmer = RSLPStemmer()
+    text = ' '.join([stemmer.stem(word) for word in text.split()])
+    return text
 
 
 def fn_get_proxima_data(data):
@@ -16,7 +62,7 @@ def fn_get_proxima_data(data):
 def fn_get_notas_taquigafricas(orador, data_inicial, data_final, link):
     discursos = []
     data_discurso = []
-    #df = pd.DataFrame()
+    df = pd.DataFrame()
     orador = orador.replace(" ", "+")
     link_base = link
     data_inicial = pd.to_datetime(data_inicial)
@@ -45,7 +91,12 @@ def fn_get_notas_taquigafricas(orador, data_inicial, data_final, link):
 
         data_atual = fn_get_proxima_data(data_atual)
 
-    return pd.DataFrame(list(zip(data_discurso, discursos)), columns=['data_discurso', 'discurso'])
+        df = pd.DataFrame(list(zip(data_discurso, discursos)), columns=['data_discurso', 'discurso'])
+
+    df['discurso_tratado'] = df['discurso'].apply(fn_rm_stopwords)
+    df['discurso_tratado'] = df['discurso'].apply(fn_rm_special_char)
+    df['discurso_tratado'] = df['discurso'].apply(fn_stemmer)
+    return df
 
 
 def fn_busca_tabela(tabela, link_base, discursos, data_discurso):

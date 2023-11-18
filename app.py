@@ -15,8 +15,8 @@ app = Flask(__name__)
 
 LINK = "https://www.camara.leg.br/internet/sitaqweb/"
 ANALYZER = create_analyzer(task="sentiment", lang="pt")
-TFIDF_VECTORIZER = 'models/lr_tfidf_vectorizer.pkl'
-MODEL_FILENAME = 'models/lr.pkl'
+TFIDF_VECTORIZER = 'models/tfidf_vectorizer.pkl'
+MODEL_FILENAME = 'models/svc_model.pkl'
 with open(MODEL_FILENAME, 'rb') as file:
     svc_model = pickle.load(file)
 with open(TFIDF_VECTORIZER, 'rb') as file:
@@ -36,8 +36,8 @@ def fn_get_sentimento_svm(discursos):
     lista = []
 
     for index, row in discursos.iterrows():
-        sent = svc_model.predict(tfidf.transform([row['discurso']]))
-        proba = svc_model.predict_proba(tfidf.transform([row['discurso']]))
+        sent = svc_model.predict(tfidf.transform([row['discurso_tratado']]))
+        proba = svc_model.predict_proba(tfidf.transform([row['discurso_tratado']]))
         discurso = [row['data_discurso'], row['discurso'], LABEL_SENTIMENT_SVM[sent.item()], round(proba.max()*100,2)]
         lista.append(discurso)
 
@@ -58,7 +58,7 @@ def fn_get_discursos_svm(discursos):
 def fn_get_sentimento_bert(discursos):
     lista = []
     for index, row in discursos.iterrows():
-        sent = ANALYZER.predict(row['discurso'])
+        sent = ANALYZER.predict(row['discurso_tratado'])
         discurso = [row['data_discurso'], row['discurso'], LABEL_SENTIMENT_BERT[sent.output], round(max(sent.probas.values())*100,2)]
         lista.append(discurso)
 
