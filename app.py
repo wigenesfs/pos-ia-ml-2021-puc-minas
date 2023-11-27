@@ -137,4 +137,4 @@ def fn_bert():
                            data_fim=data_fim)
 
 
-#app.run(host='0.0.0.0', port=5000)
+app.run(host='0.0.0.0', port=5000)
